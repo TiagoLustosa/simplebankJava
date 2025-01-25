@@ -33,9 +33,10 @@ public class CreateTransactionUseCase {
 
         List<User> users = findTransactionUsersUseCase.call(transactionDTO.senderDocument(), transactionDTO.receiverDocument());
 
-        boolean isAuthorized = authorizationService.authorizeTransaction(users.get(0), transactionDTO.amount());
+        boolean isAuthorized = authorizationService.authorizeTransaction();
         if (!isAuthorized) {
             throw new AuthorizationException("Erro inesperado, por favor tente novamente.");
+
         }
 
         Transaction newTransaction = new Transaction();
@@ -44,11 +45,11 @@ public class CreateTransactionUseCase {
         newTransaction.setReceiver(users.get(1));
         newTransaction.setTimeStamp(LocalDateTime.now());
 
-        updateUserBalancesUseCase.call(users, transactionDTO.amount());
+
 
         this.notificationService.sendNotification(users.get(0), "Transação realizada com sucesso");
         this.notificationService.sendNotification(users.get(1), "Transação recebida com sucesso");
-
+        updateUserBalancesUseCase.call(users, transactionDTO.amount());
         this.transactionRepository.save(newTransaction);
 
         return newTransaction;

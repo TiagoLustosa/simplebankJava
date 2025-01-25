@@ -17,7 +17,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public boolean authorizeTransaction(User sender, BigDecimal value) {
+    public boolean authorizeTransaction() {
         ResponseEntity<Map> authorizeResponse = restTemplate.getForEntity("https://util.devi.tools/api/v2/authorize", Map.class);
 
         Map<String, Object> body = authorizeResponse.getBody();
