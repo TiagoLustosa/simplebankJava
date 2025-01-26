@@ -34,9 +34,6 @@ class AuthorizationServiceTest {
     @DisplayName("Should authorize transaction when response is successful and authorization is true")
     void authorizeTransaction_SuccessfulAuthorization() throws Exception {
         // Arrange
-        User sender = new User(UUID.randomUUID(), "John Doe", "123456789", "johndoe@gmail.com", "password123", new BigDecimal(1000), null);
-        BigDecimal value = new BigDecimal(100);
-
         Map<String, Object> mockResponseBody = new HashMap<>();
         mockResponseBody.put("status", "success");
         Map<String, Object> data = new HashMap<>();
@@ -48,7 +45,7 @@ class AuthorizationServiceTest {
         when(restTemplate.getForEntity(anyString(), eq(Map.class))).thenReturn(mockResponse);
 
         // Act
-        boolean result = authorizationServiceImpl.authorizeTransaction(sender, value);
+        boolean result = authorizationServiceImpl.authorizeTransaction();
 
         // Assert
         assertTrue(result);
@@ -59,9 +56,6 @@ class AuthorizationServiceTest {
     @DisplayName("Should throw AuthorizationException when response status is 'fail'")
     void authorizeTransaction_StatusFail() {
         // Arrange
-        User sender = new User(UUID.randomUUID(), "John Doe", "123456789", "johndoe@gmail.com", "password123", new BigDecimal(1000), null);
-        BigDecimal value = new BigDecimal(100);
-
         Map<String, Object> mockResponseBody = new HashMap<>();
         mockResponseBody.put("status", "fail");
         Map<String, Object> data = new HashMap<>();
@@ -75,7 +69,7 @@ class AuthorizationServiceTest {
         // Act & Assert
         AuthorizationException exception = assertThrows(
                 AuthorizationException.class,
-                () -> authorizationServiceImpl.authorizeTransaction(sender, value)
+                () -> authorizationServiceImpl.authorizeTransaction()
         );
         assertEquals("Erro de comunicação a transação falhou", exception.getMessage());
         verify(restTemplate, times(1)).getForEntity(anyString(), eq(Map.class));
@@ -85,9 +79,6 @@ class AuthorizationServiceTest {
     @DisplayName("Should throw AuthorizationException when authorization is false")
     void authorizeTransaction_AuthorizationFalse() {
         // Arrange
-        User sender = new User(UUID.randomUUID(), "John Doe", "123456789", "johndoe@gmail.com", "password123", new BigDecimal(1000), null);
-        BigDecimal value = new BigDecimal(100);
-
         Map<String, Object> mockResponseBody = new HashMap<>();
         mockResponseBody.put("status", "success");
         Map<String, Object> data = new HashMap<>();
@@ -101,7 +92,7 @@ class AuthorizationServiceTest {
         // Act & Assert
         AuthorizationException exception = assertThrows(
                 AuthorizationException.class,
-                () -> authorizationServiceImpl.authorizeTransaction(sender, value)
+                () -> authorizationServiceImpl.authorizeTransaction()
         );
         assertEquals("Transação não autorizada", exception.getMessage());
         verify(restTemplate, times(1)).getForEntity(anyString(), eq(Map.class));
